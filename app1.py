@@ -428,8 +428,11 @@ def admin_dashboard():
                     
                     # Update total score
                     total_score = 0
-                    for pid in user_data["problems"]:
-                        total_score += user_data["problems"][pid].get("score", 0)
+                    if "problems" in user_data:  # Check if problems exists
+                        for pid in user_data["problems"]:
+                            # Safely get the problem data and then the score
+                            problem_data = user_data["problems"].get(pid, {})
+                            total_score += problem_data.get("score", 0)
                     user_data["total_score"] = total_score
                     
                     # Save data
