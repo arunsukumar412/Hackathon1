@@ -124,7 +124,7 @@ def login_form():
     
     with col_title:
         st.title("ALGO PROTOCOLS HACKATHON 2.0 ")
-        st.subheader("Developed by the Team Algo Protocols")
+        st.subheader("Developed by the Team Algo Protocols @ 2025")
     
     st.subheader("Test your Java skills with these challenging problems")
     
