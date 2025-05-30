@@ -3,11 +3,10 @@ import json
 import os
 import time
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from io import BytesIO
 from PIL import Image  
-
 
 # Initialize session state
 def init_session_state():
@@ -89,6 +88,9 @@ Given `n` orders, each order consists of a pickup and a delivery service. Count 
     if 'data_file' not in st.session_state:
         st.session_state.data_file = "user_data.json"
         
+    if 'time_up' not in st.session_state:
+        st.session_state.time_up = False
+        
     # Load existing data
     if not os.path.exists(st.session_state.data_file):
         with open(st.session_state.data_file, 'w') as f:
@@ -106,6 +108,19 @@ def load_data():
 def save_data(data):
     with open(st.session_state.data_file, 'w') as f:
         json.dump(data, f)
+
+# Timer component
+def show_timer(end_time):
+    now = datetime.now()
+    time_left = end_time - now
+    
+    if time_left.total_seconds() <= 0:
+        st.session_state.time_up = True
+        return "00:00:00"
+    
+    hours, remainder = divmod(time_left.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 # Authentication
 def login_form():
@@ -139,6 +154,8 @@ def login_form():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.role = "user"
+                st.session_state.hackathon_start = datetime.now()
+                st.session_state.hackathon_end = st.session_state.hackathon_start + timedelta(hours=1)
                 
                 # Load or create user data
                 data = load_data()
@@ -147,7 +164,8 @@ def login_form():
                         "problems": {},
                         "start_time": datetime.now().isoformat(),
                         "completed": False,
-                        "total_score": 0
+                        "total_score": 0,
+                        "hackathon_end": st.session_state.hackathon_end.isoformat()
                     }
                     save_data(data)
                 
@@ -246,6 +264,38 @@ def thank_you_page():
    
     """, unsafe_allow_html=True)
 
+# Time up page
+def time_up_page():
+    st.error("⏰ Time's Up! ⏰")
+    st.markdown("""
+    <div style="background:#0e1a40;padding:30px;border-radius:15px;margin:20px 0">
+        <h2 style="color:white;text-align:center">The 1-hour hackathon has ended!</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Load user data
+    data = load_data()
+    user_data = data["users"].get(st.session_state.username, {})
+    total_score = user_data.get("total_score", 0)
+    
+    if total_score > 0:
+        st.markdown(f"""
+        <div style="background:#1b5e20;padding:20px;border-radius:10px;margin-bottom:30px;text-align:center">
+            <h2 style="color:white">Your Final Score: {total_score}/100</h2>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.info("Your solutions are pending evaluation by the admin")
+    
+    st.subheader("Your Solutions")
+    for problem in st.session_state.problems:
+        problem_id = str(problem['id'])
+        problem_data = user_data.get("problems", {}).get(problem_id, {})
+        
+        if problem_data.get("solution"):
+            with st.expander(f"Problem {problem['id']}: {problem['title']}"):
+                st.code(problem_data.get("solution", ""), language="java")
+
 # Convert data to Excel format
 def convert_to_excel(data):
     # Prepare data for Excel
@@ -301,7 +351,7 @@ def convert_to_excel(data):
                 for cell in column:
                     try:
                         if len(str(cell.value)) > max_length:
-                            max_length = len(cell.value)
+                            max_length = len(str(cell.value))
                     except:
                         pass
                 adjusted_width = (max_length + 2)
@@ -330,6 +380,12 @@ def admin_dashboard():
     # Show user summary
     solved_count = sum(1 for pid in user_data["problems"] if user_data["problems"][pid]["solution"])
     total_score = user_data.get("total_score", 0)
+    
+    # Display timer for admin to see user's remaining time
+    if "hackathon_end" in user_data:
+        end_time = datetime.fromisoformat(user_data["hackathon_end"])
+        time_left = show_timer(end_time)
+        st.markdown(f"**Time remaining for {selected_user}:** `{time_left}`")
     
     col1, col2 = st.columns(2)
     col1.metric("Problems Solved", f"{solved_count}/4")
@@ -487,6 +543,28 @@ def main():
         background: linear-gradient(45deg, #00c853, #64dd17) !important;
         width: 100%;
     }
+    
+    /* Timer styling */
+    .timer {
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        border-radius: 8px;
+        background: rgba(0,0,0,0.3);
+        margin-bottom: 20px;
+    }
+    
+    .time-warning {
+        color: #ff5252;
+        animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -504,12 +582,36 @@ def main():
         return
     
     # Navigation header
-    st.title(f" Hackathon  by ALGO PROTOCOLS")
+    st.title(f" Hackathon by ALGO PROTOCOLS")
     st.subheader(f"Welcome, {st.session_state.username}!")
     
     # Load user data
     data = load_data()
     user_data = data["users"].get(st.session_state.username, {})
+    
+    # Show timer
+    if "hackathon_end" in user_data:
+        end_time = datetime.fromisoformat(user_data["hackathon_end"])
+        time_left = show_timer(end_time)
+        
+        # Check if time is up
+        if st.session_state.time_up:
+            time_up_page()
+            return
+            
+        # Show warning when time is running out
+        if datetime.now() > end_time - timedelta(minutes=10):
+            st.markdown(f"""
+            <div class="timer time-warning">
+                ⏰ Time Remaining: {time_left}
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div class="timer">
+                ⏰ Time Remaining: {time_left}
+            </div>
+            """, unsafe_allow_html=True)
     
     # Show progress
     solved_count = sum(1 for pid in user_data.get("problems", {}) 
@@ -532,6 +634,13 @@ def main():
         user_data["completed"] = True
         data["users"][st.session_state.username] = user_data
         save_data(data)
+    
+    # Check if time is up
+    if "hackathon_end" in user_data:
+        if datetime.now() > datetime.fromisoformat(user_data["hackathon_end"]):
+            st.session_state.time_up = True
+            time_up_page()
+            return
     
     # Show thank you page if completed
     if st.session_state.completed or user_data.get("completed", False):
