@@ -421,7 +421,7 @@ def main():
     st.set_page_config(
         page_title="Algo Protocols",
         layout="wide",
-        page_icon="🔥",
+        page_icon="algo.png",
         initial_sidebar_state="collapsed"
     )
     
