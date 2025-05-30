@@ -94,7 +94,7 @@ Given `n` orders, each order consists of a pickup and a delivery service. Count 
     # Load existing data
     if not os.path.exists(st.session_state.data_file):
         with open(st.session_state.data_file, 'w') as f:
-            json.dump({"users": {}, "admin_password": hashlib.sha256("admin123".encode()).hexdigest()}, f)
+            json.dump({"users": {}, "admin_password": hashlib.sha256("arunsukumar03".encode()).hexdigest()}, f)
 
 # Load user data
 def load_data():
