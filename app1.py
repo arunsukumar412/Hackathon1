@@ -123,7 +123,8 @@ def login_form():
             """, unsafe_allow_html=True)
     
     with col_title:
-        st.title("ALGO PROTOCOLS Hackathon ")
+        st.title("ALGO PROTOCOLS HACKATHON 2.0 ")
+        st.subheader("Developed by the Team Algo Protocols")
     
     st.subheader("Test your Java skills with these challenging problems")
     
