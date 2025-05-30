@@ -242,16 +242,7 @@ def thank_you_page():
             st.code(problem_data.get("solution", ""), language="java")
     
     st.markdown("""
-    <div style="text-align:center;margin-top:50px">
-        <h3>Want more challenges?</h3>
-        <p>Check out the original problems on LeetCode:</p>
-        <ul style="list-style:none;padding:0">
-            <li><a href="https://leetcode.com/problems/regular-expression-matching/">Regular Expression Matching</a></li>
-            <li><a href="https://leetcode.com/problems/integer-to-english-words/">Integer to English Words</a></li>
-            <li><a href="https://leetcode.com/problems/burst-balloons/">Burst Balloons</a></li>
-            <li><a href="https://leetcode.com/problems/count-all-valid-pickup-and-delivery-options/">Count Valid Pickup/Delivery Options</a></li>
-        </ul>
-    </div>
+   
     """, unsafe_allow_html=True)
 
 # Convert data to Excel format
