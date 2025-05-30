@@ -276,7 +276,7 @@ def time_up_page():
     # Load user data
     data = load_data()
     user_data = data["users"].get(st.session_state.username, {})
-    total_score = user_data.get("total_score", 0)
+    total_score = user_data.get("total_score", 50)
     
     if total_score > 0:
         st.markdown(f"""
