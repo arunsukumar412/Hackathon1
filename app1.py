@@ -37,7 +37,7 @@ The matching should cover the entire input string (not partial).
                 "description": """
 Convert a non-negative integer `num` to its English words representation.
                 """,
-                "difficulty": "Hard",
+                "difficulty": "Medium",
                 "example": {
                     "input": "num = 12345",
                     "output": "'Twelve Thousand Three Hundred Forty Five'"
@@ -54,7 +54,7 @@ You are given `n` balloons, indexed from `0` to `n - 1`. Each balloon is painted
 You are asked to burst all the balloons. If you burst the ith balloon, you will get `nums[i-1] * nums[i] * nums[i+1]` coins.
 Return the maximum coins you can collect by bursting the balloons wisely.
                 """,
-                "difficulty": "Hard",
+                "difficulty": "Medium",
                 "example": {
                     "input": "nums = [3,1,5,8]",
                     "output": "167"
@@ -69,7 +69,7 @@ Return the maximum coins you can collect by bursting the balloons wisely.
                 "description": """
 Given `n` orders, each order consists of a pickup and a delivery service. Count all valid pickup/delivery possible sequences such that delivery is always after its pickup.
                 """,
-                "difficulty": "Hard",
+                "difficulty": "Easy",
                 "example": {
                     "input": "n = 2",
                     "output": "6"
@@ -419,7 +419,7 @@ def admin_dashboard():
 def main():
     # Page configuration
     st.set_page_config(
-        page_title="LeetCode Challenge",
+        page_title="Algo Protocols",
         layout="wide",
         page_icon="🔥",
         initial_sidebar_state="collapsed"
