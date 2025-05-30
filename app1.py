@@ -22,7 +22,7 @@ Given an input string `s` and a pattern `p`, implement regular expression matchi
 - '*' matches zero or more of the preceding element.
 The matching should cover the entire input string (not partial).
                 """,
-                "difficulty": "Hard",
+                "difficulty": "Easy",
                 "example": {
                     "input": "s = 'aa', p = 'a'",
                     "output": "false"
@@ -69,7 +69,7 @@ Return the maximum coins you can collect by bursting the balloons wisely.
                 "description": """
 Given `n` orders, each order consists of a pickup and a delivery service. Count all valid pickup/delivery possible sequences such that delivery is always after its pickup.
                 """,
-                "difficulty": "Easy",
+                "difficulty": "Hard",
                 "example": {
                     "input": "n = 2",
                     "output": "6"
