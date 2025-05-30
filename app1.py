@@ -656,6 +656,143 @@ def main():
         elif not user_data["problems"][problem_id].get("solution", ""):
             show_problem(problem)
             break
+# [Previous code remains exactly the same until the if __name__ == "__main__": block]
 
 if __name__ == "__main__":
-    main()
+    # Test cases for the application
+    import unittest
+    from unittest.mock import patch, MagicMock
+    
+    class TestHackathonApp(unittest.TestCase):
+        def setUp(self):
+            # Initialize a clean session state for each test
+            st.session_state.clear()
+            if os.path.exists("user_data.json"):
+                os.remove("user_data.json")
+            init_session_state()
+            
+        def test_init_session_state(self):
+            self.assertIn('problems', st.session_state)
+            self.assertEqual(len(st.session_state.problems), 4)
+            self.assertIn('data_file', st.session_state)
+            
+        def test_user_login(self):
+            with patch('streamlit.text_input') as mock_text, \
+                 patch('streamlit.form_submit_button') as mock_submit:
+                mock_text.return_value = "test_user"
+                mock_submit.return_value = True
+                
+                login_form()
+                
+                self.assertTrue(st.session_state.logged_in)
+                self.assertEqual(st.session_state.username, "test_user")
+                self.assertEqual(st.session_state.role, "user")
+                
+                # Check if user data was created
+                data = load_data()
+                self.assertIn("test_user", data["users"])
+                
+        def test_admin_login(self):
+            with patch('streamlit.text_input') as mock_text, \
+                 patch('streamlit.form_submit_button') as mock_submit, \
+                 patch('streamlit.error') as mock_error:
+                # Test correct password
+                mock_text.return_value = "admin123"
+                mock_submit.return_value = True
+                
+                login_form()
+                self.assertTrue(st.session_state.logged_in)
+                self.assertEqual(st.session_state.role, "admin")
+                mock_error.assert_not_called()
+                
+                # Test incorrect password
+                st.session_state.logged_in = False
+                mock_text.return_value = "wrong_password"
+                login_form()
+                self.assertFalse(st.session_state.logged_in)
+                mock_error.assert_called_once()
+                
+        def test_timer_functionality(self):
+            # Test timer display
+            future_time = datetime.now() + timedelta(minutes=30)
+            timer_display = show_timer(future_time)
+            self.assertRegex(timer_display, r"\d{2}:\d{2}:\d{2}")
+            
+            # Test expired timer
+            past_time = datetime.now() - timedelta(minutes=1)
+            timer_display = show_timer(past_time)
+            self.assertEqual(timer_display, "00:00:00")
+            self.assertTrue(st.session_state.time_up)
+            
+        def test_problem_submission(self):
+            # First login as user
+            st.session_state.logged_in = True
+            st.session_state.username = "test_user"
+            st.session_state.role = "user"
+            
+            # Test submitting a solution
+            problem = st.session_state.problems[0]
+            with patch('streamlit.text_area') as mock_area, \
+                 patch('streamlit.button') as mock_button, \
+                 patch('streamlit.success') as mock_success:
+                mock_area.return_value = "test solution"
+                mock_button.return_value = True
+                
+                show_problem(problem)
+                
+                # Check if solution was saved
+                data = load_data()
+                user_data = data["users"]["test_user"]
+                self.assertIn("1", user_data["problems"])
+                self.assertEqual(user_data["problems"]["1"]["solution"], "test solution")
+                mock_success.assert_called_once()
+                
+        def test_admin_dashboard(self):
+            # First create a test user with data
+            data = load_data()
+            data["users"]["test_user"] = {
+                "problems": {
+                    "1": {
+                        "solution": "test solution",
+                        "submitted_at": datetime.now().isoformat(),
+                        "score": None,
+                        "feedback": ""
+                    }
+                },
+                "start_time": datetime.now().isoformat(),
+                "completed": False,
+                "total_score": 0,
+                "hackathon_end": (datetime.now() + timedelta(hours=1)).isoformat()
+            }
+            save_data(data)
+            
+            # Login as admin
+            st.session_state.logged_in = True
+            st.session_state.role = "admin"
+            
+            with patch('streamlit.selectbox') as mock_select, \
+                 patch('streamlit.slider') as mock_slider, \
+                 patch('streamlit.text_area') as mock_area, \
+                 patch('streamlit.form_submit_button') as mock_submit, \
+                 patch('streamlit.success') as mock_success:
+                mock_select.return_value = "test_user"
+                mock_slider.return_value = 20
+                mock_area.return_value = "Good job!"
+                mock_submit.return_value = True
+                
+                admin_dashboard()
+                
+                # Check if evaluation was saved
+                data = load_data()
+                user_data = data["users"]["test_user"]
+                self.assertEqual(user_data["problems"]["1"]["score"], 20)
+                self.assertEqual(user_data["problems"]["1"]["feedback"], "Good job!")
+                self.assertEqual(user_data["total_score"], 20)
+                mock_success.assert_called_once()
+    
+    # Run the application with test flag
+    if os.environ.get('TEST_MODE') == '1':
+        unittest.main(argv=['first-arg-is-ignored'], exit=False)
+    else:
+        main()
+    
