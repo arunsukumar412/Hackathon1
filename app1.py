@@ -32,38 +32,6 @@ The matching should cover the entire input string (not partial).
             },
             {
                 "id": 2,
-                "title": "Integer to English Words",
-                "description": """
-Convert a non-negative integer `num` to its English words representation.
-                """,
-                "difficulty": "Medium",
-                "example": {
-                    "input": "num = 12345",
-                    "output": "'Twelve Thousand Three Hundred Forty Five'"
-                },
-                "solution": "",
-                "solved": False,
-                "max_score": 25
-            },
-            {
-                "id": 3,
-                "title": "Burst Balloons",
-                "description": """
-You are given `n` balloons, indexed from `0` to `n - 1`. Each balloon is painted with a number on it represented by an array `nums`.
-You are asked to burst all the balloons. If you burst the ith balloon, you will get `nums[i-1] * nums[i] * nums[i+1]` coins.
-Return the maximum coins you can collect by bursting the balloons wisely.
-                """,
-                "difficulty": "Medium",
-                "example": {
-                    "input": "nums = [3,1,5,8]",
-                    "output": "167"
-                },
-                "solution": "",
-                "solved": False,
-                "max_score": 25
-            },
-            {
-                "id": 4,
                 "title": "Count All Valid Pickup/Delivery Options",
                 "description": """
 Given `n` orders, each order consists of a pickup and a delivery service. Count all valid pickup/delivery possible sequences such that delivery is always after its pickup.
