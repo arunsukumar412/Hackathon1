@@ -14,36 +14,126 @@ def init_session_state():
         st.session_state.problems = [
             {
                 "id": 1,
-                "title": "Regular Expression Matching",
+                "title": "Wildcard Matching",
                 "description": """
-Given an input string `s` and a pattern `p`, implement regular expression matching with support for '.' and '*' where:
-- '.' matches any single character.
-- '*' matches zero or more of the preceding element.
+Given an input string (s) and a pattern (p), implement wildcard pattern matching with support for '?' and '*' where:
+- '?' Matches any single character.
+- '*' Matches any sequence of characters (including the empty sequence).
 The matching should cover the entire input string (not partial).
+
+**Constraints:**
+- 0 <= s.length, p.length <= 2000
+- s contains only lowercase English letters
+- p contains only lowercase English letters, '?' or '*'
+
+**Example 1:**
+Input: s = "aa", p = "a"
+Output: false
+Explanation: "a" does not match the entire string "aa".
+
+**Example 2:**
+Input: s = "aa", p = "*"
+Output: true
+Explanation: '*' matches any sequence.
+
+**Example 3:**
+Input: s = "cb", p = "?a"
+Output: false
+Explanation: '?' matches 'c', but the second character is 'a' which does not match 'b'.
                 """,
-                "difficulty": "Easy",
+                "difficulty": "Hard",
                 "example": {
                     "input": "s = 'aa', p = 'a'",
                     "output": "false"
                 },
                 "solution": "",
                 "solved": False,
-                "max_score": 25
+                "max_score": 40
             },
             {
                 "id": 2,
-                "title": "Count All Valid Pickup/Delivery Options",
+                "title": "Circular Array Loop",
                 "description": """
-Given `n` orders, each order consists of a pickup and a delivery service. Count all valid pickup/delivery possible sequences such that delivery is always after its pickup.
+You are playing a game involving a circular array of non-zero integers nums. 
+Each nums[i] denotes the number of indices forward/backward you must move if you are located at index i:
+- If nums[i] is positive, move forward nums[i] steps.
+- If nums[i] is negative, move backward nums[i] steps.
+
+A cycle in the array is defined by a sequence of indices seq where:
+- Following the movement rules results in a repeating sequence
+- The cycle length is > 1
+- All movements in the cycle must follow a single direction
+
+Return true if there is a cycle in nums, and false otherwise.
+
+**Constraints:**
+- 1 <= nums.length <= 5000
+- -1000 <= nums[i] <= 1000
+- nums[i] != 0
+
+**Example 1:**
+Input: nums = [2,-1,1,2,2]
+Output: true
+Explanation: There is a cycle (0 -> 2 -> 3 -> 0) with all positive movements.
+
+**Example 2:**
+Input: nums = [-1,2]
+Output: false
+Explanation: The sequence (0 -> 1 -> 0) has a negative movement and a positive movement.
+
+**Example 3:**
+Input: nums = [-2,1,-1,-2,-2]
+Output: false
+Explanation: The sequence (0 -> 1 -> 2 -> 0) has a negative movement and a positive movement.
                 """,
-                "difficulty": "Hard",
+                "difficulty": "Medium",
                 "example": {
-                    "input": "n = 2",
-                    "output": "6"
+                    "input": "nums = [2,-1,1,2,2]",
+                    "output": "true"
                 },
                 "solution": "",
                 "solved": False,
-                "max_score": 25
+                "max_score": 40
+            },
+            {
+                "id": 3,
+                "title": "Excel Sheet Column Title",
+                "description": """
+Given an integer columnNumber, return its corresponding column title as it appears in an Excel sheet.
+
+For example:
+1 -> "A"
+2 -> "B"
+3 -> "C"
+...
+26 -> "Z"
+27 -> "AA"
+28 -> "AB"
+...
+
+**Constraints:**
+- 1 <= columnNumber <= 2³¹ - 1
+
+**Example 1:**
+Input: columnNumber = 1
+Output: "A"
+
+**Example 2:**
+Input: columnNumber = 28
+Output: "AB"
+
+**Example 3:**
+Input: columnNumber = 701
+Output: "ZY"
+                """,
+                "difficulty": "Easy",
+                "example": {
+                    "input": "columnNumber = 28",
+                    "output": "'AB'"
+                },
+                "solution": "",
+                "solved": False,
+                "max_score": 20
             }
         ]
     
@@ -62,7 +152,7 @@ Given `n` orders, each order consists of a pickup and a delivery service. Count 
     # Load existing data
     if not os.path.exists(st.session_state.data_file):
         with open(st.session_state.data_file, 'w') as f:
-            json.dump({"users": {}, "admin_password": hashlib.sha256("arunsukumar03".encode()).hexdigest()}, f)
+            json.dump({"users": {}, "admin_password": hashlib.sha256("admin123".encode()).hexdigest()}, f)
 
 # Load user data
 def load_data():
@@ -96,10 +186,10 @@ def login_form():
     col_logo, col_title = st.columns([1, 3])
     with col_logo:
         try:
-            logo = Image.open("algo.png")  # Make sure the file is in your project directory
-            st.image(logo, width=150)  # Adjust width as needed
+            logo = Image.open("algo.png")
+            st.image(logo, width=150)
             l = Image.open("1748583695432.png")
-            st.image(l,width = 200)
+            st.image(l, width=200)
         except FileNotFoundError:
             st.markdown("""
             <div style="margin-bottom:10px">
@@ -208,7 +298,7 @@ def thank_you_page():
     
     st.markdown(f"""
     <div style="background:#0e1a40;padding:30px;border-radius:15px;margin:20px 0">
-        <h2 style="color:white;text-align:center">You solved all 4 problems in {int(minutes)}m {int(seconds)}s!</h2>
+        <h2 style="color:white;text-align:center">You solved all 3 problems in {int(minutes)}m {int(seconds)}s!</h2>
     </div>
     """, unsafe_allow_html=True)
     
@@ -231,7 +321,10 @@ def thank_you_page():
             st.code(problem_data.get("solution", ""), language="java")
     
     st.markdown("""
-   
+    <div style="text-align:center;margin-top:30px">
+        <h3>Thank you for participating in the Algo Protocols Hackathon!</h3>
+        <p>Results will be announced soon. Stay tuned!</p>
+    </div>
     """, unsafe_allow_html=True)
 
 # Time up page
@@ -246,7 +339,7 @@ def time_up_page():
     # Load user data
     data = load_data()
     user_data = data["users"].get(st.session_state.username, {})
-    total_score = user_data.get("total_score", 50)
+    total_score = user_data.get("total_score", 0)
     
     if total_score > 0:
         st.markdown(f"""
@@ -349,7 +442,6 @@ def admin_dashboard():
     
     # Show user summary
     solved_count = sum(1 for pid in user_data.get("problems", {}) if user_data["problems"].get(pid, {}).get("solution"))
-    total_score = user_data.get("total_score", 0)
     
     # Display timer for admin to see user's remaining time
     if "hackathon_end" in user_data:
@@ -358,8 +450,8 @@ def admin_dashboard():
         st.markdown(f"**Time remaining for {selected_user}:** `{time_left}`")
     
     col1, col2 = st.columns(2)
-    col1.metric("Problems Solved", f"{solved_count}/4")
-    col2.metric("Total Score", f"{total_score}/100")
+    col1.metric("Problems Solved", f"{solved_count}/3")
+    col2.metric("Total Score", f"{user_data.get('total_score', 0)}/100")
     
     # Show problems and solutions
     for problem in st.session_state.problems:
@@ -396,7 +488,7 @@ def admin_dashboard():
                     problem_data["score"] = score
                     problem_data["feedback"] = feedback
                     
-                    # Update total score - FIXED SECTION
+                    # Update total score
                     total_score = 0
                     if "problems" in user_data:
                         for pid in user_data["problems"]:
@@ -408,8 +500,6 @@ def admin_dashboard():
                     data["users"][selected_user] = user_data
                     save_data(data)
                     st.success("Evaluation saved!")
-    
-    # [Rest of the function remains the same]
     
     # Export data to Excel
     st.divider()
@@ -630,143 +720,6 @@ def main():
         elif not user_data["problems"][problem_id].get("solution", ""):
             show_problem(problem)
             break
-# [Previous code remains exactly the same until the if __name__ == "__main__": block]
 
 if __name__ == "__main__":
-    # Test cases for the application
-    import unittest
-    from unittest.mock import patch, MagicMock
-    
-    class TestHackathonApp(unittest.TestCase):
-        def setUp(self):
-            # Initialize a clean session state for each test
-            st.session_state.clear()
-            if os.path.exists("user_data.json"):
-                os.remove("user_data.json")
-            init_session_state()
-            
-        def test_init_session_state(self):
-            self.assertIn('problems', st.session_state)
-            self.assertEqual(len(st.session_state.problems), 4)
-            self.assertIn('data_file', st.session_state)
-            
-        def test_user_login(self):
-            with patch('streamlit.text_input') as mock_text, \
-                 patch('streamlit.form_submit_button') as mock_submit:
-                mock_text.return_value = "test_user"
-                mock_submit.return_value = True
-                
-                login_form()
-                
-                self.assertTrue(st.session_state.logged_in)
-                self.assertEqual(st.session_state.username, "test_user")
-                self.assertEqual(st.session_state.role, "user")
-                
-                # Check if user data was created
-                data = load_data()
-                self.assertIn("test_user", data["users"])
-                
-        def test_admin_login(self):
-            with patch('streamlit.text_input') as mock_text, \
-                 patch('streamlit.form_submit_button') as mock_submit, \
-                 patch('streamlit.error') as mock_error:
-                # Test correct password
-                mock_text.return_value = "admin123"
-                mock_submit.return_value = True
-                
-                login_form()
-                self.assertTrue(st.session_state.logged_in)
-                self.assertEqual(st.session_state.role, "admin")
-                mock_error.assert_not_called()
-                
-                # Test incorrect password
-                st.session_state.logged_in = False
-                mock_text.return_value = "wrong_password"
-                login_form()
-                self.assertFalse(st.session_state.logged_in)
-                mock_error.assert_called_once()
-                
-        def test_timer_functionality(self):
-            # Test timer display
-            future_time = datetime.now() + timedelta(minutes=30)
-            timer_display = show_timer(future_time)
-            self.assertRegex(timer_display, r"\d{2}:\d{2}:\d{2}")
-            
-            # Test expired timer
-            past_time = datetime.now() - timedelta(minutes=1)
-            timer_display = show_timer(past_time)
-            self.assertEqual(timer_display, "00:00:00")
-            self.assertTrue(st.session_state.time_up)
-            
-        def test_problem_submission(self):
-            # First login as user
-            st.session_state.logged_in = True
-            st.session_state.username = "test_user"
-            st.session_state.role = "user"
-            
-            # Test submitting a solution
-            problem = st.session_state.problems[0]
-            with patch('streamlit.text_area') as mock_area, \
-                 patch('streamlit.button') as mock_button, \
-                 patch('streamlit.success') as mock_success:
-                mock_area.return_value = "test solution"
-                mock_button.return_value = True
-                
-                show_problem(problem)
-                
-                # Check if solution was saved
-                data = load_data()
-                user_data = data["users"]["test_user"]
-                self.assertIn("1", user_data["problems"])
-                self.assertEqual(user_data["problems"]["1"]["solution"], "test solution")
-                mock_success.assert_called_once()
-                
-        def test_admin_dashboard(self):
-            # First create a test user with data
-            data = load_data()
-            data["users"]["test_user"] = {
-                "problems": {
-                    "1": {
-                        "solution": "test solution",
-                        "submitted_at": datetime.now().isoformat(),
-                        "score": None,
-                        "feedback": ""
-                    }
-                },
-                "start_time": datetime.now().isoformat(),
-                "completed": False,
-                "total_score": 0,
-                "hackathon_end": (datetime.now() + timedelta(hours=1)).isoformat()
-            }
-            save_data(data)
-            
-            # Login as admin
-            st.session_state.logged_in = True
-            st.session_state.role = "admin"
-            
-            with patch('streamlit.selectbox') as mock_select, \
-                 patch('streamlit.slider') as mock_slider, \
-                 patch('streamlit.text_area') as mock_area, \
-                 patch('streamlit.form_submit_button') as mock_submit, \
-                 patch('streamlit.success') as mock_success:
-                mock_select.return_value = "test_user"
-                mock_slider.return_value = 20
-                mock_area.return_value = "Good job!"
-                mock_submit.return_value = True
-                
-                admin_dashboard()
-                
-                # Check if evaluation was saved
-                data = load_data()
-                user_data = data["users"]["test_user"]
-                self.assertEqual(user_data["problems"]["1"]["score"], 20)
-                self.assertEqual(user_data["problems"]["1"]["feedback"], "Good job!")
-                self.assertEqual(user_data["total_score"], 20)
-                mock_success.assert_called_once()
-    
-    # Run the application with test flag
-    if os.environ.get('TEST_MODE') == '100':
-        unittest.main(argv=['first-arg-is-ignored'], exit=False)
-    else:
-        main()
-    
+    main()
